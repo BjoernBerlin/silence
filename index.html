@@ -4,35 +4,38 @@
   <meta charset="UTF-8">
   <title>Word Counter WebApp</title>
   <style>
-    body { font-family: sans-serif; margin: 2em; }
+    body { font-family: sans-serif; margin: 2em; transition: background 0.5s; }
     #result { margin-top: 2em; font-size: 1.15em; }
     button { font-size: 1em; padding: .5em 1.2em; margin-right: 1em;}
+    #resetBtn { background: #fff; border: 2px solid #a00; color: #a00; }
   </style>
 </head>
 <body>
   <h1>Word Counter</h1>
-  <p>Click “Start Listening” and begin speaking. Words are counted as you go. The counter stops and notifies you at the set limit.</p>
+  <p>Click “Start Listening” and begin speaking. Words are counted as you go. The counter stops and the screen turns red at the set limit.<br>
+    <b>Tip:</b> If the screen gets dark, tap to keep awake. On newer devices, WakeLock keeping the screen alive is attempted automatically.</p>
   <button id="start">🎙️ Start Listening</button>
   <button id="stop" disabled>⏹ Stop</button>
   <div id="result"></div>
 
   <script>
-    let wakelock = null;
-    async function enableWakeLock() {
-        if ("wakeLock" in navigator) {
-            try {
-                wakelock = await navigator.wakeLock.request('screen');
-            } catch (err) {
-                console.log('WakeLock nicht verfügbar:', err);
-            }
-        }
-    }
-    document.getElementById("start").onclick = () => {
-        enableWakeLock();
     let recognition;
     let totalWords = 0;
     const wordLimit = 50;  // <- Set your limit here!
     const resultDiv = document.getElementById('result');
+    let wakelock = null;
+    let listening = false; // Used to disable/enable starting after results
+
+    // Activate WakeLock if browser allows
+    async function enableWakeLock() {
+      if ('wakeLock' in navigator) {
+        try {
+          wakelock = await navigator.wakeLock.request('screen');
+        } catch (err) {
+          console.log('WakeLock not available:', err);
+        }
+      }
+    }
 
     function handleResult(event) {
       let transcript = event.results[event.resultIndex][0].transcript;
@@ -42,40 +45,47 @@
       totalWords += chunk;
       resultDiv.innerHTML += `<br>+${chunk} Words (running total = ${totalWords})`;
       if (totalWords >= wordLimit) {
-          // Bildschirm rot färben
-          document.body.style.backgroundColor = "red";
-          // Große, weiße Textmeldung (im resultDiv)
-          resultDiv.innerHTML += `<br><b style="font-size:2em; color:white;">Limit reached!</b>`;
-          // Aufnahme stoppen etc.
-          recognition.stop();
-          document.getElementById('start').disabled = false;
-          document.getElementById('stop').disabled = true;
-          // (Optional) Keine Sprachausgabe, falls Systemtöne abgeschaltet sind!
-          // window.speechSynthesis.speak(new SpeechSynthesisUtterance("Limit reached")); // kannst du entfernen oder auskommentieren
+        document.body.style.backgroundColor = "red";
+        resultDiv.innerHTML += `<br><b style="font-size:2em; color:white; background:red;">Limit reached!</b>`;
+        recognition.stop();
+        listening = false;
+        document.getElementById('start').disabled = true;
+        document.getElementById('stop').disabled = true;
+        // Reset-Button anzeigen
+        resultDiv.innerHTML += `<br><button id="resetBtn" style="font-size:1.2em; margin-top:1em;">Reset</button>`;
+        document.getElementById('resetBtn').onclick = () => {
+          location.reload();
+        };
       }
     }
 
     document.getElementById('start').onclick = () => {
+      if (listening) return;
+      listening = true;
       totalWords = 0;
       resultDiv.innerHTML = "";
+      document.body.style.backgroundColor = ""; // Reset bg
+      enableWakeLock();
       if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         alert("Sorry, your browser does not support Speech Recognition.");
         return;
       }
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       recognition = new SpeechRecognition();
-      recognition.lang = 'en-US'; // 'de-DE' for German
+      recognition.lang = 'en-US'; // or 'de-DE' for German
       recognition.continuous = true;
       recognition.interimResults = false;
       recognition.onresult = handleResult;
       recognition.onend = () => {
-          if (totalWords < wordLimit) {
-              recognition.start();
-              // optional: kleine Verzögerung davor
-          } else {
-              document.getElementById('start').disabled = false;
-              document.getElementById('stop').disabled = true;
-          }
+        // Automatisch neu starten solange Limit nicht erreicht
+        if (listening && totalWords < wordLimit) {
+          // Mobil-Browser stoppen automatisch: Neustart ok
+          recognition.start();
+        } else {
+          document.getElementById('start').disabled = false;
+          document.getElementById('stop').disabled = true;
+          listening = false;
+        }
       };
       recognition.start();
       document.getElementById('start').disabled = true;
@@ -86,6 +96,7 @@
       if (recognition) recognition.stop();
       document.getElementById('start').disabled = false;
       document.getElementById('stop').disabled = true;
+      listening = false;
     }
   </script>
 </body>
