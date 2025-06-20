@@ -52,8 +52,13 @@
       recognition.interimResults = false;
       recognition.onresult = handleResult;
       recognition.onend = () => {
-        document.getElementById('start').disabled = false;
-        document.getElementById('stop').disabled = true;
+          if (totalWords < wordLimit) {
+              recognition.start();
+              // optional: kleine Verzögerung davor
+          } else {
+              document.getElementById('start').disabled = false;
+              document.getElementById('stop').disabled = true;
+          }
       };
       recognition.start();
       document.getElementById('start').disabled = true;
