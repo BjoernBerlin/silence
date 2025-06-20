@@ -17,6 +17,18 @@
   <div id="result"></div>
 
   <script>
+    let wakelock = null;
+    async function enableWakeLock() {
+        if ("wakeLock" in navigator) {
+            try {
+                wakelock = await navigator.wakeLock.request('screen');
+            } catch (err) {
+                console.log('WakeLock nicht verfügbar:', err);
+            }
+        }
+    }
+    document.getElementById("start").onclick = () => {
+        enableWakeLock();
     let recognition;
     let totalWords = 0;
     const wordLimit = 50;  // <- Set your limit here!
@@ -30,11 +42,16 @@
       totalWords += chunk;
       resultDiv.innerHTML += `<br>+${chunk} Words (running total = ${totalWords})`;
       if (totalWords >= wordLimit) {
-        resultDiv.innerHTML += `<br><b style="color:red">Limit reached!</b>`;
-        recognition.stop();
-        document.getElementById('start').disabled = false;
-        document.getElementById('stop').disabled = true;
-        window.speechSynthesis.speak(new SpeechSynthesisUtterance("Limit reached"));
+          // Bildschirm rot färben
+          document.body.style.backgroundColor = "red";
+          // Große, weiße Textmeldung (im resultDiv)
+          resultDiv.innerHTML += `<br><b style="font-size:2em; color:white;">Limit reached!</b>`;
+          // Aufnahme stoppen etc.
+          recognition.stop();
+          document.getElementById('start').disabled = false;
+          document.getElementById('stop').disabled = true;
+          // (Optional) Keine Sprachausgabe, falls Systemtöne abgeschaltet sind!
+          // window.speechSynthesis.speak(new SpeechSynthesisUtterance("Limit reached")); // kannst du entfernen oder auskommentieren
       }
     }
 
