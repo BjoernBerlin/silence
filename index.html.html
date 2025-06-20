@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Word Counter WebApp</title>
+  <style>
+    body { font-family: sans-serif; margin: 2em; }
+    #result { margin-top: 2em; font-size: 1.15em; }
+    button { font-size: 1em; padding: .5em 1.2em; margin-right: 1em;}
+  </style>
+</head>
+<body>
+  <h1>Word Counter</h1>
+  <p>Click “Start Listening” and begin speaking. Words are counted as you go. The counter stops and notifies you at the set limit.</p>
+  <button id="start">🎙️ Start Listening</button>
+  <button id="stop" disabled>⏹ Stop</button>
+  <div id="result"></div>
+
+  <script>
+    let recognition;
+    let totalWords = 0;
+    const wordLimit = 50;  // <- Set your limit here!
+    const resultDiv = document.getElementById('result');
+
+    function handleResult(event) {
+      let transcript = event.results[event.resultIndex][0].transcript;
+      resultDiv.innerHTML += "<br><b>Heard:</b> " + transcript;
+      let words = transcript.trim().split(/\s+/).filter(w => w.length > 0);
+      let chunk = words.length;
+      totalWords += chunk;
+      resultDiv.innerHTML += `<br>+${chunk} Words (running total = ${totalWords})`;
+      if (totalWords >= wordLimit) {
+        resultDiv.innerHTML += `<br><b style="color:red">Limit reached!</b>`;
+        recognition.stop();
+        document.getElementById('start').disabled = false;
+        document.getElementById('stop').disabled = true;
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance("Limit reached"));
+      }
+    }
+
+    document.getElementById('start').onclick = () => {
+      totalWords = 0;
+      resultDiv.innerHTML = "";
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert("Sorry, your browser does not support Speech Recognition.");
+        return;
+      }
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.lang = 'en-US'; // 'de-DE' for German
+      recognition.continuous = true;
+      recognition.interimResults = false;
+      recognition.onresult = handleResult;
+      recognition.onend = () => {
+        document.getElementById('start').disabled = false;
+        document.getElementById('stop').disabled = true;
+      };
+      recognition.start();
+      document.getElementById('start').disabled = true;
+      document.getElementById('stop').disabled = false;
+    };
+
+    document.getElementById('stop').onclick = () => {
+      if (recognition) recognition.stop();
+      document.getElementById('start').disabled = false;
+      document.getElementById('stop').disabled = true;
+    }
+  </script>
+</body>
+</html>
