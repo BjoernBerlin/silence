@@ -7,26 +7,37 @@
     body { font-family: sans-serif; margin: 2em; transition: background 0.5s; }
     #result { margin-top: 2em; font-size: 1.15em; }
     button { font-size: 1em; padding: .5em 1.2em; margin-right: 1em;}
-    #resetBtn { background: #fff; border: 2px solid #a00; color: #a00; }
+    #langBtn { background: #eee; border: 1px solid #888; color: #222; }
   </style>
 </head>
 <body>
   <h1>Word Counter</h1>
-  <p>Click “Start Listening” and begin speaking. Words are counted as you go. The counter stops and the screen turns red at the set limit.<br>
-    <b>Tip:</b> If the screen gets dark, tap to keep awake. On newer devices, WakeLock keeping the screen alive is attempted automatically.</p>
+  <button id="langBtn">🇬🇧 EN</button>
   <button id="start">🎙️ Start Listening</button>
   <button id="stop" disabled>⏹ Stop</button>
   <div id="result"></div>
-
   <script>
     let recognition;
     let totalWords = 0;
-    const wordLimit = 50;  // <- Set your limit here!
+    const wordLimit = 50;  // <- Hier das Limit setzen!
     const resultDiv = document.getElementById('result');
     let wakelock = null;
-    let listening = false; // Used to disable/enable starting after results
+    let listening = false; 
+    let language = 'en-US'; // Aktuelle Sprache, default Englisch
 
-    // Activate WakeLock if browser allows
+    // Sprachumschalter
+    const langBtn = document.getElementById("langBtn");
+    langBtn.onclick = () => {
+      if (language === 'en-US') {
+        language = 'de-DE';
+        langBtn.textContent = '🇩🇪 DE';
+      } else {
+        language = 'en-US';
+        langBtn.textContent = '🇬🇧 EN';
+      }
+    };
+
+    // WakeLock wie gehabt
     async function enableWakeLock() {
       if ('wakeLock' in navigator) {
         try {
@@ -49,13 +60,8 @@
         resultDiv.innerHTML += `<br><b style="font-size:2em; color:white; background:red;">Limit reached!</b>`;
         recognition.stop();
         listening = false;
-        document.getElementById('start').disabled = true;
+        document.getElementById('start').disabled = false;
         document.getElementById('stop').disabled = true;
-        // Reset-Button anzeigen
-        resultDiv.innerHTML += `<br><button id="resetBtn" style="font-size:1.2em; margin-top:1em;">Reset</button>`;
-        document.getElementById('resetBtn').onclick = () => {
-          location.reload();
-        };
       }
     }
 
@@ -72,14 +78,13 @@
       }
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       recognition = new SpeechRecognition();
-      recognition.lang = 'en-US'; // or 'de-DE' for German
+      recognition.lang = language;
       recognition.continuous = true;
       recognition.interimResults = false;
       recognition.onresult = handleResult;
       recognition.onend = () => {
         // Automatisch neu starten solange Limit nicht erreicht
         if (listening && totalWords < wordLimit) {
-          // Mobil-Browser stoppen automatisch: Neustart ok
           recognition.start();
         } else {
           document.getElementById('start').disabled = false;
