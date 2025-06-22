@@ -1,108 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Word Counter WebApp</title>
+  <title>Wortlimit-Teilen-Frontend (synchron)</title>
   <style>
     body { font-family: sans-serif; margin: 2em; transition: background 0.5s; }
     #result { margin-top: 2em; font-size: 1.15em; }
-    button { font-size: 1em; padding: .5em 1.2em; margin-right: 1em;}
-    #langBtn { background: #eee; border: 1px solid #888; color: #222; }
+    #status { margin-top: 1em; font-size: 1.3em; font-weight: bold; }
+    #transfer { margin-top: 2em; border: 1px solid #ddd; padding: 1em; background: #f7f7f7; }
+    label { display: block; margin-top: 0.5em; }
+    .highlight { background: red; color: white; font-size: 2em; padding: .7em 1.5em;}
+    #start, #stop { margin-right: 1em; }
+    #userID { font-family: monospace; background: #eee; padding: 0 .4em;}
   </style>
 </head>
 <body>
-  <h1>Word Counter</h1>
-  <button id="langBtn">🇬🇧 EN</button>
-  <button id="start">🎙️ Start Listening</button>
-  <button id="stop" disabled>⏹ Stop</button>
+<h1>Word Counter & Wortlimit teilen (synchronisiert)</h1>
+
+<div>
+  <div id="registration" style="margin-bottom:1.5em;">
+    <span>User ID: </span>
+    <span id="userID"></span>
+    <button id="registerBtn">Ich bin neu / Neue ID erzeugen</button>
+  </div>
+  <div id="status"></div>
+  <div>
+    <button id="start">🎙️ Start Listening</button>
+    <button id="stop" disabled>⏹ Stop</button>
+  </div>
   <div id="result"></div>
-  <script>
-    let recognition;
-    let totalWords = 0;
-    const wordLimit = 50;  // <- Hier das Limit setzen!
-    const resultDiv = document.getElementById('result');
-    let wakelock = null;
-    let listening = false; 
-    let language = 'en-US'; // Aktuelle Sprache, default Englisch
+</div>
 
-    // Sprachumschalter
-    const langBtn = document.getElementById("langBtn");
-    langBtn.onclick = () => {
-      if (language === 'en-US') {
-        language = 'de-DE';
-        langBtn.textContent = '🇩🇪 DE';
-      } else {
-        language = 'en-US';
-        langBtn.textContent = '🇬🇧 EN';
-      }
-    };
+<div id="transfer">
+  <h3>Wörter verschenken</h3>
+  <label>Empfänger-ID: <input id="toID" type="text" size="40"></label>
+  <label>Anzahl: <input id="amount" type="number" min="1" value="1"></label>
+  <button id="giveBtn">Wörter senden</button>
+  <div id="transferMsg"></div>
+</div>
 
-    // WakeLock wie gehabt
-    async function enableWakeLock() {
-      if ('wakeLock' in navigator) {
-        try {
-          wakelock = await navigator.wakeLock.request('screen');
-        } catch (err) {
-          console.log('WakeLock not available:', err);
-        }
-      }
+<script>
+const SERVER = "http://DEINE-SERVER-IP:5000"; // <-- HIER deine echte IP!
+let userID = localStorage.getItem("user_id") || null;
+let currentLimit = 0;
+let usedWords = 0;
+let recognition = null;
+let wakeLock = null;
+let listening = false;
+
+// Registrierung
+async function registerUser() {
+  const resp = await fetch(SERVER + "/api/register", {method: "POST"});
+  const result = await resp.json();
+  userID = result.user_id;
+  localStorage.setItem("user_id", userID);
+  document.getElementById('userID').textContent = userID;
+  updateStatus();
+}
+
+// Status auslesen und anzeigen
+async function updateStatus() {
+  if (!userID) return;
+  const resp = await fetch(SERVER + `/api/status?user_id=${userID}`);
+  const result = await resp.json();
+  if(result.limit !== undefined){
+    currentLimit = result.limit;
+    let msg = `Dein aktuelles Wort-Limit: <span style="color:blue">${currentLimit}</span>`;
+    if(currentLimit <= 0) {
+      msg = `<span class="highlight">Limit erreicht!</span>`;
+      document.body.style.backgroundColor = "red";
+      stopListening();
+    } else {
+      document.body.style.backgroundColor = "";
     }
+    document.getElementById('status').innerHTML = msg;
+  } else {
+    document.getElementById('status').innerHTML = `<span style="color:red">${result.error||'Fehler'}</span>`;
+  }
+}
 
-    function handleResult(event) {
+// Wörter verbrauchen: Abfrage beim Server, ob genug Limit!
+async function useWordsOnServer(count) {
+  const resp = await fetch(SERVER + `/api/use_words`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: userID, amount: count })
+  });
+  const result = await resp.json();
+  if(result.limit !== undefined) {
+    currentLimit = result.limit;
+    updateStatus();
+    return true;
+  } else {
+    currentLimit = 0;
+    updateStatus();
+    document.getElementById('result').innerHTML += `<br><b style="color:red;">Limit erreicht! Stoppe Aufnahme.</b>`;
+    return false;
+  }
+}
+
+// Wörter verschenken
+document.getElementById('giveBtn').onclick = async function() {
+  let recipient = document.getElementById('toID').value.trim();
+  let amount = +document.getElementById('amount').value;
+  if (!recipient || !amount || amount < 1) {
+    document.getElementById('transferMsg').textContent = "Bitte Ziel-ID und Menge korrekt angeben!";
+    return;
+  }
+  const resp = await fetch(SERVER + "/api/transfer", {
+    method: "POST",
+    headers: { 'Content-Type': 'application/json'},
+    body: JSON.stringify({sender_id:userID, recipient_id:recipient, amount})
+  });
+  const result = await resp.json();
+  if(result.sender) {
+    document.getElementById('transferMsg').textContent = "Erfolgreich übertragen!";
+    updateStatus();
+  } else {
+    document.getElementById('transferMsg').textContent = (result.error || "Transfer fehlgeschlagen");
+  }
+}
+
+// WakeLock (optional)
+async function enableWakeLock() {
+  if ('wakeLock' in navigator) {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+    } catch (err) {
+      console.log('WakeLock not available:', err);
+    }
+  }
+}
+
+function stopListening() {
+  if (recognition) recognition.stop();
+  listening = false;
+  document.getElementById('start').disabled = false;
+  document.getElementById('stop').disabled = true;
+}
+
+function startListening() {
+  if (listening) return;
+  if (!userID) { alert('Bitte zuerst registrieren!'); return; }
+  usedWords = 0;
+  document.getElementById('result').innerHTML = "";
+  // aktuelles Limit (z. B. nach Transfer) abfragen
+  updateStatus();
+  enableWakeLock();
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert("Sorry, your browser does not support Speech Recognition.");
+      return;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = 'de-DE'; // Wähle hier ggf. die Sprache
+  recognition.continuous = true;
+  recognition.interimResults = false;
+  recognition.onresult = async (event) => {
       let transcript = event.results[event.resultIndex][0].transcript;
-      resultDiv.innerHTML += "<br><b>Heard:</b> " + transcript;
       let words = transcript.trim().split(/\s+/).filter(w => w.length > 0);
       let chunk = words.length;
-      totalWords += chunk;
-      resultDiv.innerHTML += `<br>+${chunk} Words (running total = ${totalWords})`;
-      if (totalWords >= wordLimit) {
-        document.body.style.backgroundColor = "red";
-        resultDiv.innerHTML += `<br><b style="font-size:2em; color:white; background:red;">Limit reached!</b>`;
-        recognition.stop();
-        listening = false;
-        document.getElementById('start').disabled = false;
-        document.getElementById('stop').disabled = true;
+      if(chunk < 1) return;
+      const allowed = await useWordsOnServer(chunk);
+      if(!allowed) {
+        stopListening();
+      } else {
+        usedWords += chunk;
+        document.getElementById('result').innerHTML += `<br>+${chunk} Wörter (Summe = ${usedWords})`;
       }
-    }
-
-    document.getElementById('start').onclick = () => {
-      if (listening) return;
-      listening = true;
-      totalWords = 0;
-      resultDiv.innerHTML = "";
-      document.body.style.backgroundColor = ""; // Reset bg
-      enableWakeLock();
-      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        alert("Sorry, your browser does not support Speech Recognition.");
-        return;
-      }
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.lang = language;
-      recognition.continuous = true;
-      recognition.interimResults = false;
-      recognition.onresult = handleResult;
-      recognition.onend = () => {
-        // Automatisch neu starten solange Limit nicht erreicht
-        if (listening && totalWords < wordLimit) {
-          recognition.start();
-        } else {
-          document.getElementById('start').disabled = false;
-          document.getElementById('stop').disabled = true;
-          listening = false;
-        }
-      };
+  };
+  recognition.onend = () => {
+    // Mobil: Rekonstruiere Sitzungen nur, wenn Limit nicht erreicht
+    if (listening && currentLimit > 0) {
       recognition.start();
-      document.getElementById('start').disabled = true;
-      document.getElementById('stop').disabled = false;
-    };
-
-    document.getElementById('stop').onclick = () => {
-      if (recognition) recognition.stop();
-      document.getElementById('start').disabled = false;
-      document.getElementById('stop').disabled = true;
-      listening = false;
+    } else {
+      stopListening();
     }
-  </script>
+  };
+  recognition.start();
+  document.getElementById('start').disabled = true;
+  document.getElementById('stop').disabled = false;
+  listening = true;
+}
+
+// Registrierung anklicken:
+document.getElementById('registerBtn').onclick = registerUser;
+// Anzeige der eigenen ID
+if(userID) {
+  document.getElementById('userID').textContent = userID;
+  updateStatus();
+}
+// Start/Stop-Buttons
+document.getElementById('start').onclick = startListening;
+document.getElementById('stop').onclick = stopListening;
+
+// Optional: alle 5 s Status holen (zeigt Geschenke sofort)
+setInterval(updateStatus, 5000);
+
+</script>
 </body>
 </html>
