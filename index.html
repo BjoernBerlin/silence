@@ -3,26 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>silence-Prototype v23-06-25</title>
-  <!-- Google Font für modernes UI -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Responsive -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.12, maximum-scale=1.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.09, maximum-scale=1.0, user-scalable=yes">
   <style>
     html, body {
       background: linear-gradient(120deg, #1a1b22 60%, #523378 110%);
       color: #ede9ff;
       font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
       margin: 0; padding: 0; min-height: 100vh;
-      font-size: 1.18em;
+      font-size: 1.17em;
+      transition: background 0.5s;
     }
     #container {
-      width: 100%;
-      max-width: 480px;
-      padding: 2em 1em 3.5em 1em;
-      margin: 0 auto;
-      background: rgba(40,18,80,0.13);
-      border-radius: 22px;
-      margin-top: 2.5em;
+      width: 100%; max-width: 480px;
+      padding: 2em 1em 3.5em 1em; margin: 0 auto;
+      background: rgba(40,18,80,0.13); border-radius: 22px;
+      margin-top: 2.2em;
       box-shadow: 0 12px 48px #110d2055;
       display: flex; flex-direction: column; align-items: stretch;
     }
@@ -30,14 +26,14 @@
       margin: 0 0 0.5em 0; font-weight: 600; font-size: 1.43em; text-align:center;
       color: #ffc857; text-shadow: 0 3px 12px #45108422;
     }
-    .version { color: #8459ef; font-size: 0.71em; font-weight: 400; margin-left: .6em;letter-spacing:0.09em;}
+    .version { color: #8459ef; font-size: 0.69em; font-weight: 400; margin-left: .6em;letter-spacing:0.09em;}
     select, input, button {
       font-family: inherit;
       border-radius: 8px; border: none; outline: none;
-      font-size: 1.13em;
-      margin: .2em 0 .7em 0; padding: .5em 1em;
+      font-size: 1.10em;
+      margin: .2em 0 .7em 0; padding: .45em 1.13em;
       background: #222042; color: #ffd993;
-      transition: background .13s; min-width:2.3em;
+      transition: background .12s; min-width:2.3em;
     }
     button { background: #222042; font-weight:600;}
     button:hover, select:hover { background: #392061; color: #fff;}
@@ -45,18 +41,36 @@
     #langSelect { background: #11102e; color: #ffa727; font-weight:600;}
     #resetBtn { background: #ffc857; color: #54258d; font-weight:700;}
     #resetBtn:active { background: #ff9147; color: #fff; }
-    #status { font-size: 1.13em; font-weight: 600; margin-bottom:.7em;}
-    .highlight { background: #ffa500bd; color: #54258d; font-size: 1.16em; padding: .45em 1.05em; border-radius: 0.8em;}
-    #result { min-height: 2.6em; padding: .5em 0 0 0;}
-    #userID { color: #9147ff; background: #221c40; padding:.07em .5em;margin-right:.6em; font-size:1.14em;}
+    #status { font-size: 1.07em; font-weight: 600; margin-bottom:.45em;}
+    .highlight { background: #ffa500bd; color: #54258d; font-size: 1.14em; padding: .36em 1.05em; border-radius: 0.8em;}
+    #heardWords {
+      font-weight: 600;
+      font-size: 1.07em;
+      min-height: 1.6em;
+      color: #fcaf6e;
+      text-align: center;
+      margin-bottom:.43em;
+      letter-spacing: 0.02em;
+      word-spacing:.22em;
+      transition: color .2s;
+    }
+    .heardbadge {
+      display:inline-block;background:#ffa50024;color:#ff8100;border-radius:.4em;padding:.15em .37em;margin:.04em .15em;
+      font-size:1em; font-weight:500;
+      box-shadow:0 1.5px 8px #ffa50019;
+      vertical-align:middle;
+      letter-spacing:.035em;
+    }
+    #result { min-height: 1.6em; padding: .35em 0 0 0;}
+    #userID { color: #9147ff; background: #221c40; padding:.07em .45em;margin-right:.59em; font-size:1.09em;}
     #transfer, #registration {background: rgba(20,14,35,0.19); border-radius: 10px; padding:1.17em 0.85em; box-shadow: 0 1px 10px #401c6622;}
     .label-small { font-size: .99em; color: #d6c7ff; font-weight: 400; margin-right: .4em;}
-    .silencebar { width:100%; height: 11px; border-radius: 8px; background: linear-gradient(80deg, #ffa500 40%, #9147ff 100%); opacity:.51; margin-top: 2.4em; margin-bottom: -1.5em;}
+    .silencebar { width:100%; height: 10px; border-radius: 8px; background: linear-gradient(80deg, #ffa500 40%, #9147ff 100%); opacity:.51; margin-top: 1.8em; margin-bottom: -1.0em;}
     .center { text-align: center; }
-    input[type="number"],input[type="text"]{font-size:1em;min-width:2.6em;background:#2c2744;color:#fea;padding:.5em;}
+    input[type="number"],input[type="text"]{font-size:1em;min-width:2.6em;background:#2c2744;color:#fea;padding:.46em;}
     @media (max-width: 570px){ html{font-size:1.13em;} #container{padding:1em .2em;} }
-    @media (max-width: 410px){ html{font-size:0.99em;} h1{font-size:1.09em;} #container{padding:.7em 0;} }
-    @media (max-width: 370px){ html{font-size:0.90em;} }
+    @media (max-width: 410px){ html{font-size:0.97em;} h1{font-size:1.06em;} #container{padding:.6em 0;} }
+    @media (max-width: 370px){ html{font-size:0.89em;} }
     button, select, input[type=number], input[type=text] { min-height: 44px;}
     /* Modal Overlay */
     #adminModal { display:none; position:fixed; top:0;left:0;width:100vw;height:100vh;background:rgba(35,24,44,0.87);z-index:10;justify-content:center;align-items:center;}
@@ -69,7 +83,7 @@
     <h1>
       silence-Prototype <span class="version">v23-06-25</span>
     </h1>
-    <div class="center" style="margin-bottom:1.2em;">
+    <div class="center" style="margin-bottom:1.15em;">
       <select id="langSelect">
         <option value="de-DE">🇩🇪 Deutsch</option>
         <option value="en-US">🇬🇧 English</option>
@@ -81,26 +95,27 @@
       <button id="registerBtn"></button>
     </div>
     <div id="status" class="center"></div>
-    <div class="center" style="margin-bottom:2em;">
+    <div class="center" style="margin-bottom:1em;">
       <button id="start"></button>
       <button id="stop" disabled></button>
     </div>
+    <div id="heardWords"></div>
     <div id="result" class="center"></div>
 
-    <div id="transfer" class="center" style="margin-top:1.5em;">
+    <div id="transfer" class="center" style="margin-top:1.3em;">
       <h3 id="transferTitle"></h3>
-      <div style="margin-bottom:.7em;">
+      <div style="margin-bottom:.6em;">
         <label class="label-small" id="targetIDLabel"></label> 
         <input id="toID" type="text" size="13" style="width:7.3em;">
         <label class="label-small" id="amountLabel"></label>
         <input id="amount" type="number" min="1" value="1" style="width:4em;">
       </div>
       <button id="giveBtn"></button>
-      <div id="transferMsg" style="font-size:0.99em"></div>
+      <div id="transferMsg" style="font-size:0.98em"></div>
     </div>
-    <div class="center" style="margin-top:2.7em">
+    <div class="center" style="margin-top:2.3em">
       <button id="resetBtn" title="Admin Tools"></button>
-      <div id="resetMsg" style="color:#ffa500;font-size:0.97em;margin-top:.8em;"></div>
+      <div id="resetMsg" style="color:#ffa500;font-size:0.95em;margin-top:.8em;"></div>
     </div>
   </div>
 
@@ -113,13 +128,13 @@
         <input type="number" id="allGiftAmount" value="10" min="1" style="width:4.1em;font-size:1em;"> 
         <button id="allGiftBtn" style="font-size:1.09em;"></button>
       </div>
-      <button onclick="hideModal()" style="margin-top:1.6em;font-size:0.95em;padding:0.4em 2em;background:#23209b;">OK</button>
-      <div id="adminMsg" style="margin-top:1.25em;font-size:0.95em;color:#ffe;"></div>
+      <button onclick="hideModal()" style="margin-top:1.6em;font-size:0.97em;padding:0.4em 2em;background:#23209b;">OK</button>
+      <div id="adminMsg" style="margin-top:1.22em;font-size:0.97em;color:#ffe;"></div>
     </div>
   </div>
 
 <script>
-const SERVER = "https://bjoernberlin.pythonanywhere.com";
+const SERVER = "https://DEIN-PYTHONANYWHERE-NAME.pythonanywhere.com";
 const LANG = {
   "de-DE": {
     yourid:      "Deine ID:",
@@ -141,6 +156,7 @@ const LANG = {
     reset:       "Alle Limits zurücksetzen",
     allgift:     "Allen schenken",
     allgiftmsg:  "Allen wurden {n} Wörter hinzugefügt!",
+    allgiftmsg_sub: "Allen wurden {n} Wörter abgezogen!",
     ok:          "OK"
   },
   "en-US": {
@@ -163,6 +179,7 @@ const LANG = {
     reset:       "Reset all limits",
     allgift:     "Gift to all",
     allgiftmsg:  "Added {n} words to all users!",
+    allgiftmsg_sub:  "Removed {n} words from all users!",
     ok:          "OK"
   }
 };
@@ -173,6 +190,12 @@ let recognition = null;
 let wakeLock = null;
 let listening = false;
 let selectedLang = localStorage.getItem("lang") || "de-DE";
+
+// ======= Farben für Calling State ======
+const listeningBG = "linear-gradient(120deg,#ffd993 12%,#ffa500 40%,#b783ff 120%)";
+const idleBG = "linear-gradient(120deg, #1a1b22 60%, #523378 110%)";
+const reachedBG = "linear-gradient(120deg, #571a07 40%, #9147ff 110%)";
+
 function updateLangUI() {
   const L = LANG[selectedLang];
   document.getElementById("yourIDLabel").textContent = L.yourid;
@@ -184,7 +207,6 @@ function updateLangUI() {
   document.getElementById("targetIDLabel").textContent = L.target;
   document.getElementById("amountLabel").textContent = L.amount;
   document.getElementById("giveBtn").textContent = L.give;
-  // Modal
   document.getElementById("resetAllBtn").textContent = L.reset;
   document.getElementById("allGiftBtn").textContent = L.allgift;
   document.getElementById("adminTitle").textContent = L.admin;
@@ -195,9 +217,11 @@ document.getElementById("langSelect").onchange = function() {
   updateLangUI();
   document.getElementById('result').innerHTML = "";
   updateStatus();
+  document.getElementById('heardWords').innerHTML = "";
 };
 document.getElementById("langSelect").value = selectedLang;
 updateLangUI();
+
 async function registerUser() {
   const resp = await fetch(SERVER + "/api/register", {method: "POST"});
   const result = await resp.json();
@@ -216,10 +240,12 @@ async function updateStatus() {
     let msg = `${L.limit}: <span style="color:#ffa500">${currentLimit}</span>`;
     if(currentLimit <= 0) {
       msg = `<span class="highlight">${L.reached}</span>`;
-      document.body.style.background = "linear-gradient(120deg, #571a07 40%, #9147ff 110%)";
+      document.body.style.background = reachedBG;
       stopListening();
+    } else if (listening) {
+      document.body.style.background = listeningBG;
     } else {
-      document.body.style.background = "linear-gradient(120deg, #1a1b22 60%, #523378 110%)";
+      document.body.style.background = idleBG;
     }
     document.getElementById('status').innerHTML = msg;
   } else {
@@ -275,11 +301,15 @@ function stopListening() {
   listening = false;
   document.getElementById('start').disabled = false;
   document.getElementById('stop').disabled = true;
+  document.body.style.background = idleBG;
+  document.getElementById('heardWords').innerHTML = "";
 }
 function startListening() {
   if (listening) return;
   if (!userID) { alert(LANG[selectedLang].regfirst); return; }
   document.getElementById('result').innerHTML = "";
+  document.body.style.background = listeningBG;
+  document.getElementById('heardWords').innerHTML = "";
   updateStatus();
   enableWakeLock();
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -294,6 +324,9 @@ function startListening() {
   recognition.onresult = async (event) => {
       let transcript = event.results[event.resultIndex][0].transcript;
       let words = transcript.trim().split(/\s+/).filter(w => w.length > 0);
+      // ==== LETZTER CHUNK zeigen ====
+      document.getElementById('heardWords').innerHTML = words.map(w=>
+        `<span class="heardbadge">${w}</span>`).join(" ");
       let chunk = words.length;
       if(chunk < 1) return;
       const allowed = await useWordsOnServer(chunk);
@@ -311,6 +344,7 @@ function startListening() {
   document.getElementById('start').disabled = true;
   document.getElementById('stop').disabled = false;
   listening = true;
+  document.body.style.background = listeningBG;
 }
 document.getElementById('registerBtn').onclick = registerUser;
 if(userID) {
@@ -363,11 +397,10 @@ document.getElementById("allGiftBtn").onclick = async function() {
   });
   const result = await resp.json();
   if (result.status) {
-    // Zeige Status + sofort aktualisieren
-    document.getElementById("adminMsg").innerHTML = L.allgiftmsg.replace("{n}", n) + "<br>" + result.status;
+    let txt = n>0 ? L.allgiftmsg.replace("{n}", n) : L.allgiftmsg_sub.replace("{n}", -n);
+    document.getElementById("adminMsg").innerHTML = txt + "<br>" + result.status;
     updateStatus();
   } else {
-    // Fehler zeigen falls einer kommt
     document.getElementById("adminMsg").innerHTML = result.error || L.resetfail;
   }
 };
