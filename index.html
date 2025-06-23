@@ -55,11 +55,17 @@
       transition: color .2s;
     }
     .heardbadge {
-      display:inline-block;background:#ffa50024;color:#ff8100;border-radius:.4em;padding:.15em .37em;margin:.04em .15em;
-      font-size:1em; font-weight:500;
-      box-shadow:0 1.5px 8px #ffa50019;
+      display:inline-block;
+      background: #ffe8bd;         /* sehr helles, warmes Orange */
+      color: #2b1905;              /* sehr dunkles Braun */
+      border-radius:.5em;
+      padding:.14em .45em;
+      margin:.06em .13em;
+      font-size:1em; font-weight:600;
+      box-shadow:0 1.5px 9px #bd71072c;
       vertical-align:middle;
-      letter-spacing:.035em;
+      letter-spacing:.03em;
+      border: 1.5px solid #ffc85790;
     }
     #result { min-height: 1.6em; padding: .35em 0 0 0;}
     #userID { color: #9147ff; background: #221c40; padding:.07em .45em;margin-right:.59em; font-size:1.09em;}
@@ -237,7 +243,7 @@ async function updateStatus() {
   const L = LANG[selectedLang];
   if(result.limit !== undefined){
     currentLimit = result.limit;
-    let msg = `${L.limit}: <span style="color:#ffa500">${currentLimit}</span>`;
+    let msg = `${L.limit}: <span style="background:#fff9e2;color:#432b83;border-radius:.5em;padding:.10em .65em;font-weight:700;box-shadow:0 1px 6px #ffa51224;border:1.5px solid #ffcf68b5">${currentLimit}</span>`;
     if(currentLimit <= 0) {
       msg = `<span class="highlight">${L.reached}</span>`;
       document.body.style.background = reachedBG;
