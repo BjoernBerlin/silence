@@ -3,148 +3,144 @@
 <head>
   <meta charset="UTF-8">
   <title>silence-Prototype v23-06-25</title>
-  <!-- Schöne Webfonts via Google Fonts, optional -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.12, maximum-scale=1.0, user-scalable=yes">
   <style>
-    body {
+    html, body {
       background: linear-gradient(120deg, #1a1b22 60%, #523378 110%);
       color: #ede9ff;
       font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-      margin: 0; padding: 0;
-      min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center;
+      margin: 0; padding: 0; min-height: 100vh;
+      font-size: 1.16em;
     }
     #container {
-      width: 100%;
-      max-width: 420px;
-      padding: 2.5em 1em 3em 1em;
-      margin: 0 auto;
-      background: rgba(40,18,80,0.20);
-      border-radius: 22px;
+      width: 100%; max-width: 480px;
+      padding: 2em 1em 3.5em 1em; margin: 0 auto;
+      background: rgba(40,18,80,0.13); border-radius: 22px;
       margin-top: 2.5em;
       box-shadow: 0 12px 48px #110d2055;
       display: flex; flex-direction: column; align-items: stretch;
     }
     h1 {
-      margin: 0 0 0.5em 0;
-      font-weight: 600;
-      font-size: 1.7em;
-      letter-spacing: 0.08em;
-      color: #ffc857;
-      text-shadow: 0 3px 17px #45108444;
+      margin: 0 0 0.5em 0; font-weight: 600; font-size: 1.43em; text-align:center;
+      color: #ffc857; text-shadow: 0 3px 12px #45108422;
     }
-    .version {
-      color: #8459ef;
-      font-size: 0.66em;
-      font-weight: 400;
-      letter-spacing: 0.09em;
-      margin-left: .6em;
-    }
-    button, select, input[type=number], input[type=text] {
+    .version { color: #8459ef; font-size: 0.71em; font-weight: 400; margin-left: .6em;letter-spacing:0.09em;}
+    select, input, button {
       font-family: inherit;
-      border-radius: 7px;
-      border: none;
-      outline: none;
-      font-size: 1.09em;
-      margin: .37em 0 .69em 0;
-      padding: .57em 1.18em;
-      background: #222042;
-      color: #ffd993;
-      transition: background .13s;
-      box-shadow: 0 2px 13px #38208522 inset;
+      border-radius: 8px; border: none; outline: none;
+      font-size: 1.13em;
+      margin: .2em 0 .7em 0; padding: .5em 1em;
+      background: #222042; color: #ffd993;
+      transition: background .13s; min-width:2.3em;
     }
-    button:hover, select:hover {
-      background: #392061;
-      color: #fff;
-    }
-    button:active { background: #9147ff; color: #fff; }
-    #langSelect {
-      background: #11102e; 
-      color: #ffa727;
-      padding: .27em 1.15em;
-      margin: 0;
-      font-size: 1.09em;
-      font-weight: 600;
-      border: 1px solid #ffa50044;
-    }
-    #resetBtn {
-      background: #ffc857;
-      color: #54258d;
-      font-weight: 700;
-      margin-top: 1em;
-      border: 1px solid #ff9147b0;
-      padding: 0.6em 1.7em;
-      box-shadow: 0 4px 15px #ff914760 inset;
-    }
+    button { background: #222042; font-weight:600;}
+    button:hover, select:hover { background: #392061; color: #fff;}
+    button:active { background: #9147ff; color: #fff;}
+    #langSelect { background: #11102e; color: #ffa727; font-weight:600;}
+    #resetBtn { background: #ffc857; color: #54258d; font-weight:700;}
     #resetBtn:active { background: #ff9147; color: #fff; }
-    #status { font-size: 1.19em; font-weight: 600; margin-bottom:0.5em;}
-    .highlight { background: #ffa500bb; color: #54258d; font-size: 1.3em; padding: .44em 1.19em; border-radius: 0.8em;}
-    .inputline label, .inputline input, .inputline select { display:inline-block; vertical-align:middle; }
-    #result { min-height: 2.6em; padding: .7em 0 0 0; }
-    #userID { color: #9147ff; background: #221c40; padding:.07em .5em; font-size:1.11em;}
-    #transfer, #registration {
-      background: rgba(20,14,35,0.27); border-radius: 10px; padding:1em 0.9em;
-      box-shadow: 0 1px 10px #401c6622;
-      margin-bottom: 2em;
-    }
-    .label-small {
-      font-size: .97em; color: #d6c7ff;
-      font-weight: 400; margin-right: .4em;
-    }
-    .silencebar {
-      width:100%; height: 12px; border-radius: 8px; background: linear-gradient(80deg, #ffa500 40%, #9147ff 100%);
-      opacity:.55; margin-top: 2.4em; margin-bottom: -1.5em;
-    }
+    #status { font-size: 1.13em; font-weight: 600; margin-bottom:.7em;}
+    .highlight { background: #ffa500bd; color: #54258d; font-size: 1.16em; padding: .45em 1.05em; border-radius: 0.8em;}
+    #result { min-height: 2.6em; padding: .5em 0 0 0;}
+    #userID { color: #9147ff; background: #221c40; padding:.07em .5em;margin-right:.6em; font-size:1.14em;}
+    #transfer, #registration {background: rgba(20,14,35,0.19); border-radius: 10px; padding:1.17em 0.85em; box-shadow: 0 1px 10px #401c6622;}
+    .label-small { font-size: .99em; color: #d6c7ff; font-weight: 400; margin-right: .4em;}
+    .silencebar { width:100%; height: 11px; border-radius: 8px; background: linear-gradient(80deg, #ffa500 40%, #9147ff 100%); opacity:.51; margin-top: 2.4em; margin-bottom: -1.5em;}
     .center { text-align: center; }
-    @media (max-width: 499px) {
-      #container { max-width:100vw; }
-      h1 { font-size:1.1em;}
-    }
+    input[type="number"],input[type="text"]{font-size:1em;min-width:2.6em;background:#2c2744;color:#fea;padding:.5em;}
+    @media (max-width: 570px){ html{font-size:1.10em;}}
+    @media (max-width: 410px){ html{font-size:0.99em;} h1{font-size:1.09em;}}
+    @media (max-width: 370px){ html{font-size:0.91em;}}
+    /* erhöht Tap-Fläche auf kleinen Geräten */
+    button, select, input[type=number], input[type=text] { min-height: 44px;}
   </style>
 </head>
 <body>
   <div class="silencebar"></div>
   <div id="container">
-    <h1>silence-Prototype <span class="version">v23-06-25</span></h1>
-    <div class="center" style="margin-bottom:1.5em;">
+    <h1>
+      silence-Prototype <span class="version">v23-06-25</span>
+    </h1>
+    <div class="center" style="margin-bottom:1.2em;">
       <select id="langSelect">
-        <option value="de-DE">Deutsch</option>
-        <option value="en-US">English</option>
+        <option value="de-DE">🇩🇪 Deutsch</option>
+        <option value="en-US">🇬🇧 English</option>
       </select>
-    </div> 
+    </div>
     <div id="registration" class="center">
-      <span class="label-small">Deine ID:</span>
+      <span class="label-small" id="yourIDLabel"></span>
       <span id="userID" style="font-family: monospace;"></span>
-      <button id="registerBtn">Neue ID registrieren</button>
+      <button id="registerBtn"></button>
     </div>
     <div id="status" class="center"></div>
     <div class="center" style="margin-bottom:2em;">
-      <button id="start">🎙️ Start Listening</button>
-      <button id="stop" disabled>⏹ Stop</button>
+      <button id="start"></button>
+      <button id="stop" disabled></button>
     </div>
     <div id="result" class="center"></div>
 
-    <div id="transfer" class="center" style="margin-top:1em;">
-      <h3 style="color:#ffa500;font-size:1.25em;margin-bottom:.1em;">Wort-Transfer</h3>
-      <div class="inputline">
-        <label class="label-small">Empfänger-ID: 
-          <input id="toID" type="text" size="13" style="width:7em;font-size:1.08em;">
-        </label>
-        <label class="label-small">Menge: 
-          <input id="amount" type="number" min="1" value="1" style="width:3.8em;">
-        </label>
+    <div id="transfer" class="center" style="margin-top:1.5em;">
+      <h3 id="transferTitle"></h3>
+      <div style="margin-bottom:.7em;">
+        <label class="label-small" id="targetIDLabel"></label> 
+        <input id="toID" type="text" size="13" style="width:7.3em;">
+        <label class="label-small" id="amountLabel"></label>
+        <input id="amount" type="number" min="1" value="1" style="width:4em;">
       </div>
-      <button id="giveBtn">Transfer</button>
+      <button id="giveBtn"></button>
       <div id="transferMsg" style="font-size:0.99em"></div>
     </div>
     <div class="center" style="margin-top:2.7em">
-      <button id="resetBtn" title="Reset für alle (admin code nötig)">Admin Reset</button>
-      <div id="resetMsg" style="color:#ffa500;font-size:0.93em;margin-top:.8em;"></div>
+      <button id="resetBtn" title="Reset für alle (admin code nötig)"></button>
+      <div id="resetMsg" style="color:#ffa500;font-size:0.97em;margin-top:.8em;"></div>
     </div>
   </div>
 
 <script>
-const SERVER = "https://bjoernberlin.pythonanywhere.com"; // <-- Trage hier deine echte Server-URL ein!
+const SERVER = "https://bjoernberlin.pythonanywhere.com";
+// Sprach-UI-Strings
+const LANG = {
+  "de-DE": {
+    yourid:      "Deine ID:",
+    regbtn:      "Neue ID registrieren",
+    start:       "🎙️ Aufnahme starten",
+    stop:        "⏹ Stopp",
+    limit:       "Limit",
+    reached:     "Limit erreicht!⛔",
+    transfer:    "Wort-Transfer",
+    target:      "Empfänger-ID:",
+    amount:      "Menge:",
+    give:        "Transfer",
+    trsuccess:   "Transfer erfolgreich!",
+    trfail:      "Transfer fehlgeschlagen!",
+    regfirst:    "Bitte zuerst registrieren!",
+    micfail:     "Sorry, dein Browser unterstützt Spracherkennung nicht.",
+    allreset:    "Alle Limits wurden zurückgesetzt!",
+    adminreset:  "Admin Reset",
+    resetfail:   "Reset fehlgeschlagen!"
+  },
+  "en-US": {
+    yourid:      "Your ID:",
+    regbtn:      "Register new ID",
+    start:       "🎙️ Start Listening",
+    stop:        "⏹ Stop",
+    limit:       "Limit",
+    reached:     "Limit reached! ⛔",
+    transfer:    "Word Transfer",
+    target:      "Recipient ID:",
+    amount:      "Amount:",
+    give:        "Transfer",
+    trsuccess:   "Transfer successful!",
+    trfail:      "Transfer failed!",
+    regfirst:    "Please register first!",
+    micfail:     "Sorry, your browser doesn't support speech recognition.",
+    allreset:    "All limits have been reset!",
+    adminreset:  "Admin Reset",
+    resetfail:   "Reset failed!"
+  }
+};
+
 let userID = localStorage.getItem("user_id") || null;
 let currentLimit = 0;
 let recognition = null;
@@ -152,13 +148,29 @@ let wakeLock = null;
 let listening = false;
 let selectedLang = localStorage.getItem("lang") || "de-DE";
 
-document.getElementById("langSelect").value = selectedLang;
+// UI-Texte anpassen
+function updateLangUI() {
+  const L = LANG[selectedLang];
+  document.getElementById("yourIDLabel").textContent = L.yourid;
+  document.getElementById("registerBtn").textContent = L.regbtn;
+  document.getElementById("start").textContent = L.start;
+  document.getElementById("stop").textContent = L.stop;
+  document.getElementById("resetBtn").textContent = L.adminreset;
+  document.getElementById("transferTitle").textContent = L.transfer;
+  document.getElementById("targetIDLabel").textContent = L.target;
+  document.getElementById("amountLabel").textContent = L.amount;
+  document.getElementById("giveBtn").textContent = L.give;
+}
 document.getElementById("langSelect").onchange = function() {
   selectedLang = this.value;
   localStorage.setItem("lang", selectedLang);
+  updateLangUI();
+  document.getElementById('result').innerHTML = "";
+  updateStatus();
 };
+document.getElementById("langSelect").value = selectedLang;
+updateLangUI();
 
-// Registrierung mit kurzer ID
 async function registerUser() {
   const resp = await fetch(SERVER + "/api/register", {method: "POST"});
   const result = await resp.json();
@@ -167,16 +179,16 @@ async function registerUser() {
   document.getElementById('userID').textContent = userID;
   updateStatus();
 }
-
 async function updateStatus() {
   if (!userID) return;
   const resp = await fetch(SERVER + `/api/status?user_id=${userID}`);
   const result = await resp.json();
+  const L = LANG[selectedLang];
   if(result.limit !== undefined){
     currentLimit = result.limit;
-    let msg = `Limit: <span style="color:#ffa500">${currentLimit}</span>`;
+    let msg = `${L.limit}: <span style="color:#ffa500">${currentLimit}</span>`;
     if(currentLimit <= 0) {
-      msg = `<span class="highlight">Limit erreicht!</span>`;
+      msg = `<span class="highlight">${L.reached}</span>`;
       document.body.style.background = "linear-gradient(120deg, #571a07 40%, #9147ff 110%)";
       stopListening();
     } else {
@@ -187,8 +199,6 @@ async function updateStatus() {
     document.getElementById('status').innerHTML = `<span style="color:#d44">${result.error||'Fehler'}</span>`;
   }
 }
-
-// Wörter verbrauchen: Abfrage beim Server
 async function useWordsOnServer(count) {
   const resp = await fetch(SERVER + `/api/use_words`, {
     method: "POST",
@@ -196,6 +206,7 @@ async function useWordsOnServer(count) {
     body: JSON.stringify({ user_id: userID, amount: count })
   });
   const result = await resp.json();
+  const L = LANG[selectedLang];
   if(result.limit !== undefined) {
     currentLimit = result.limit;
     updateStatus();
@@ -203,17 +214,16 @@ async function useWordsOnServer(count) {
   } else {
     currentLimit = 0;
     updateStatus();
-    document.getElementById('result').innerHTML += `<br><b style="color:#ffa500;">Limit erreicht!⛔</b>`;
+    document.getElementById('result').innerHTML += `<br><b style="color:#ffa500;">${L.reached}</b>`;
     return false;
   }
 }
-
-// Wort-Transfer
 document.getElementById('giveBtn').onclick = async function() {
+  const L = LANG[selectedLang];
   let recipient = document.getElementById('toID').value.trim();
   let amount = +document.getElementById('amount').value;
   if (!recipient || !amount || amount < 1) {
-    document.getElementById('transferMsg').textContent = "Bitte Ziel-ID und Menge korrekt angeben!";
+    document.getElementById('transferMsg').textContent = L.trfail;
     return;
   }
   const resp = await fetch(SERVER + "/api/transfer", {
@@ -223,36 +233,30 @@ document.getElementById('giveBtn').onclick = async function() {
   });
   const result = await resp.json();
   if(result.sender) {
-    document.getElementById('transferMsg').textContent = "Transfer erfolgreich!";
+    document.getElementById('transferMsg').textContent = L.trsuccess;
     updateStatus();
   } else {
-    document.getElementById('transferMsg').textContent = (result.error || "Transfer fehlgeschlagen");
+    document.getElementById('transferMsg').textContent = (result.error || L.trfail);
   }
-}
-
+};
 async function enableWakeLock() {
   if ('wakeLock' in navigator) {
-    try {
-      wakeLock = await navigator.wakeLock.request('screen');
-    } catch (err) {/*noop*/}
-  }
+    try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {/*noop*/} }
 }
-
 function stopListening() {
   if (recognition) recognition.stop();
   listening = false;
   document.getElementById('start').disabled = false;
   document.getElementById('stop').disabled = true;
 }
-
 function startListening() {
   if (listening) return;
-  if (!userID) { alert('Bitte zuerst registrieren!'); return; }
+  if (!userID) { alert(LANG[selectedLang].regfirst); return; }
   document.getElementById('result').innerHTML = "";
   updateStatus();
   enableWakeLock();
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert("Sorry, dein Browser unterstützt Spracherkennung nicht.");
+      alert(LANG[selectedLang].micfail);
       return;
   }
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -266,14 +270,10 @@ function startListening() {
       let chunk = words.length;
       if(chunk < 1) return;
       const allowed = await useWordsOnServer(chunk);
-      if(!allowed) {
-        stopListening();
-      } else {
-        document.getElementById('result').innerHTML += `<br>+${chunk} Wörter`;
-      }
+      if(!allowed) { stopListening();
+      } else { document.getElementById('result').innerHTML += `<br>+${chunk} ${selectedLang=='en-US'?'words':'Wörter'}`; }
   };
   recognition.onend = () => {
-    // Mobil: Neustart, wenn Limit noch nicht erreicht
     if (listening && currentLimit > 0) {
       recognition.start();
     } else {
@@ -285,37 +285,30 @@ function startListening() {
   document.getElementById('stop').disabled = false;
   listening = true;
 }
-
-// Registrierung
 document.getElementById('registerBtn').onclick = registerUser;
 if(userID) {
   document.getElementById('userID').textContent = userID;
   updateStatus();
 }
-// Start/Stop
 document.getElementById('start').onclick = startListening;
 document.getElementById('stop').onclick = stopListening;
-// Status-Refresh
 setInterval(updateStatus, 5000);
-
-// Admin-Reset:
 document.getElementById('resetBtn').onclick = async function() {
-  let pwd = prompt("Admin-Code eingeben:");
+  const L = LANG[selectedLang];
+  let pwd = prompt(selectedLang=="de-DE"?"Admin-Code eingeben:":"Enter admin code:");
   if(!pwd) return;
   const resp = await fetch(SERVER + "/api/reset", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
+    method: "POST", headers: {"Content-Type":"application/json"},
     body: JSON.stringify({secret: pwd})
   });
   const result = await resp.json();
   if (result.status) {
-      document.getElementById("resetMsg").innerHTML = "Alle Limits wurden zurückgesetzt!";
-      // UserID löschen, UI zurücksetzen
+      document.getElementById("resetMsg").innerHTML = L.allreset;
       localStorage.removeItem("user_id");
       document.getElementById("userID").textContent = "";
       setTimeout(()=>location.reload(), 800);
   } else {
-      document.getElementById("resetMsg").innerHTML = result.error || "Reset fehlgeschlagen!";
+      document.getElementById("resetMsg").innerHTML = result.error || L.resetfail;
   }
 };
 </script>
