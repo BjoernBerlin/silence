@@ -356,16 +356,18 @@ document.getElementById("resetAllBtn").onclick = async function() {
 document.getElementById("allGiftBtn").onclick = async function() {
   const L = LANG[selectedLang];
   const n = parseInt(document.getElementById("allGiftAmount").value, 10);
-  if (!n || n < 1) return;
+  if (!n || isNaN(n)) return;
   const resp = await fetch(SERVER + "/api/all_transfer", {
     method: "POST", headers: {"Content-Type":"application/json"},
     body: JSON.stringify({secret: window._adminPwd, amount:n})
   });
   const result = await resp.json();
   if (result.status) {
-    document.getElementById("adminMsg").innerHTML = L.allgiftmsg.replace("{n}", n);
+    // Zeige Status + sofort aktualisieren
+    document.getElementById("adminMsg").innerHTML = L.allgiftmsg.replace("{n}", n) + "<br>" + result.status;
     updateStatus();
   } else {
+    // Fehler zeigen falls einer kommt
     document.getElementById("adminMsg").innerHTML = result.error || L.resetfail;
   }
 };
